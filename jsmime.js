@@ -198,6 +198,10 @@ var jsmime = (function() {
         
         return message.join('\n');
     };
+
+    MIMEMultipart.prototype.pack = function() {
+        return Base64.encode(this.as_string()).replace('+', '-');
+    };
     
     return {
         "Base64":Base64,

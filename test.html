@@ -56,13 +56,14 @@
          var email = me.emails[0]['value'];
          var message = new jsmime.MIMEMultipart();
          message.add_part('text/plain', "Hello World");
+         message.add_part('text/html', "<h1>Hello World</h1>");
          message.set('to', email);
          message.set('from', email);
          message.set('subject', 'JSMime Test');
          
-         var packed = {'raw':jsmime.Base64.encode(message.as_string())};
-         gapi.client.gmail.users.messages.send({'userId':'me', "message":packed}).execute(function() {
-             console.log(arguments);
+         var packed = {'raw':message.pack()};
+         gapi.client.gmail.users.messages.send({'userId':'me', "message":packed}).execute(function(obj) {
+             document.getElementById('status').innerHTML = "Sent: " + obj.id;
          });                         
      };
 
@@ -83,7 +84,9 @@
       Email: <div id='youremail'>----</div>
       <div id='yourimage'></div>
 
-      <input type=button onclick='send_email();' value='Send Email' id='send_button' DISABLED>
+      <input type=button onclick='send_email();' value='Send Email to Yourself' id='send_button' DISABLED>
+
+      <div id='status'></div>
     </div>
     
   </body>
