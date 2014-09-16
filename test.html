@@ -1,0 +1,91 @@
+<html>
+  <head>
+    <script src="jsmime.js"></script>
+
+    <script>
+     var scopes = ['https://www.googleapis.com/auth/gmail.compose', 
+                   'https://www.googleapis.com/auth/plus.me',
+                   'https://www.googleapis.com/auth/userinfo.email'];
+
+     var me = null;
+     var storage = localStorage;
+     
+     var handleClientLoad = function() {
+         if (storage.getItem('clientid')) {
+             document.getElementById('clientid').value = storage.getItem('clientid');
+         }
+     };
+
+     var authorize = function() {
+         storage.setItem('clientid', document.getElementById('clientid').value);
+
+         gapi.auth.authorize({
+             client_id: document.getElementById('clientid').value,
+             scope: scopes,
+             immediate: false
+         }, finish_authorize);
+     };
+
+     var finish_authorize = function(result) {
+         gapi.client.load('gmail', 'v1', function() {
+             gapi.client.load('plus', 'v1', function() {
+                 finish_load();
+             });
+         });
+     };
+
+     var finish_load = function() {
+         var request = gapi.client.plus.people.get({
+             'userId' : 'me'
+         });
+         
+         request.execute(function(resp) {
+             me = resp;
+             console.log('ID: ' + resp.id);
+             console.log('Display Name: ' + resp.displayName);
+             console.log('Image URL: ' + resp.image.url);
+             console.log('Profile URL: ' + resp.url);
+             
+             document.getElementById('youremail').innerHTML = resp.emails[0]['value'];
+             document.getElementById('send_button').disabled = false;
+             document.getElementById('yourimage').innerHTML = "<img src='" + resp.image.url + "'>";
+         });
+     };
+
+     var send_email = function() {
+         var email = me.emails[0]['value'];
+         var message = new jsmime.MIMEMultipart();
+         message.add_part('text/plain', "Hello World");
+         message.set('to', email);
+         message.set('from', email);
+         message.set('subject', 'JSMime Test');
+         
+         var packed = {'raw':jsmime.Base64.encode(message.as_string())};
+         gapi.client.gmail.users.messages.send({'userId':'me', "message":packed}).execute(function() {
+             console.log(arguments);
+         });                         
+     };
+
+    </script>
+  </head>
+
+  <body>
+    <div style='width:80%; margin:auto; text-align:right;'>
+      <div>ClientID: <input id='clientid' value='' style='width: 80%;'></div>
+    </div>
+
+    <div style='text-align:center;'>
+      <input type=button onclick='authorize();' value='Authorize' id='auth_button'>
+      <BR><BR>
+    </div>
+
+    <div style='text-align:center;'>
+      Email: <div id='youremail'>----</div>
+      <div id='yourimage'></div>
+
+      <input type=button onclick='send_email();' value='Send Email' id='send_button' DISABLED>
+    </div>
+    
+  </body>
+  <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+</html>

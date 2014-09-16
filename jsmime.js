@@ -1,4 +1,4 @@
-var email = (function() {
+var jsmime = (function() {
 
     /**
      *
