@@ -151,6 +151,10 @@ var jsmime = (function() {
         }
     };
 
+    var replaceAll = function(find, replace, str) {
+        return str.replace(new RegExp(find, 'g'), replace);
+    }
+
     var MIMEMultipart = function() {
         this.parts = [];
         this.data = {};
@@ -200,7 +204,7 @@ var jsmime = (function() {
     };
 
     MIMEMultipart.prototype.pack = function() {
-        return Base64.encode(this.as_string()).replace('+', '-');
+        return replaceAll('\\+', '-', Base64.encode(this.as_string()));
     };
     
     return {
