@@ -1,6 +1,17 @@
 <html>
   <head>
     <script src="jsmime.js"></script>
+    <style>
+     table > tbody > tr {
+       vertical-align: top;
+       font-family: sans-serif;
+     }
+
+     table > tbody > tr > td {
+       padding: 10px;
+     }
+     
+    </style>
 
     <script>
      var scopes = ['https://www.googleapis.com/auth/gmail.compose', 
@@ -63,32 +74,113 @@
          
          var packed = {'raw':message.pack()};
          gapi.client.gmail.users.messages.send({'userId':'me', "message":packed}).execute(function(obj) {
-             document.getElementById('status').innerHTML = "Sent: " + obj.id;
-         });                         
+             document.getElementById('status').innerHTML = "<a href='https://mail.google.com/mail/u/0/?pli=1#sent/" + obj.id + "' target='_blank'>Here</a>";
+         });
      };
 
     </script>
   </head>
 
   <body>
-    <div style='width:80%; margin:auto; text-align:right;'>
-      <div>ClientID: <input id='clientid' value='' style='width: 80%;'></div>
-    </div>
 
-    <div style='text-align:center;'>
-      <input type=button onclick='authorize();' value='Authorize' id='auth_button'>
-      <BR><BR>
-    </div>
+    <div style='text-align: center; font-size: 20px;'> JSMime Test </div>
 
-    <div style='text-align:center;'>
-      Email: <div id='youremail'>----</div>
-      <div id='yourimage'></div>
+    <table style='width: 80%; margin:auto;'>
+      <thead>
+        <tr style='height: 40px; font-weight: bold;'>
+          <td style='width: 100px;'>Step</td>
+          <td>Action</td>
+          <td>Status</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>
+            <div>
+              Visit the Google API Console:
+              <a href='https://console.developers.google.com/project?authuser=0'>Console</a>
+            </div>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>
+            <div>
+              Create an application and visit and activate the Google+ and Gmail APIs via the "APIs menu"
+            </div>
+          </td>
+          <td></td>
+        </tr>
 
-      <input type=button onclick='send_email();' value='Send Email to Yourself' id='send_button' DISABLED>
+        <tr>
+          <td>3</td>
+          <td>
+            <div>
+              Under "Credentials, click "Create new Client ID" and select "Web Application", make sure your javascript origins are correct, you can test with localhost if you enter it correctly, (you'll need to include the port number as well).
+            </div>
+          </td>
+          <td></td>
+        </tr>
 
-      <div id='status'></div>
-    </div>
+        <tr>
+          <td>4</td>
+          <td>
+            <div>
+              Paste the ClientID here:
+              <input id='clientid' value='' style='font-size: 12px;' size="100"></div>
+            </div>
+          </td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <td>5</td>
+          <td>
+            <div>
+              <div id='yourimage' style='float:right;'></div>
+
+              Authorize the local browser to access the APIs:
+              <input type=button onclick='authorize();' value='Authorize' id='auth_button'>
+
+              <div>
+                Email: <span id='youremail'>----</span>
+              </div>
+            </div>
+          </td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <td>6</td>
+          <td>
+            <div>
+              Send yourself an email: 
+              <input type=button onclick='send_email();' value='Send Email to Yourself' id='send_button' DISABLED>
+            </div>
+          </td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <td>7</td>
+          <td>
+            <div>
+              View the sent email: <span id='status'></span>
+            </div>
+          </td>
+          <td></td>
+        </tr>
+
+
+      </tbody>
+    </table>
+
+
+
     
   </body>
   <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+
 </html>
